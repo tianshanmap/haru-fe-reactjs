@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+}
+
+.header,
+.main,
+.footer {
+  margin: 0;
+  display: block;
+}
+
+.header, .footer {
+  height: 80px;
+  background-color: hsl(247, 9%, 60%)
+}
+
+.main {
+  background-color: hsl(60, 8%, 95%);
+  display: flex;
+  flex-direction: column;
+}
+.controls {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+}
+button {
+  background-color: hsl(10, 30, 50);
+  border-width: 1px;
+  border-radius: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-style: bold;
+  font-size: 14px;
+  padding: 10px
+}
+button:hover {
+  cursor: pointer;
+}
+input {
+  border-radius: 10px;
+  border-width: 1px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 20px;
+}
+.inputs {
+  background-color: hsl(26, 11%, 12%);
+  border-radius: 10px;
+  border-width: 1px;
+  margin-right: 10px;
+  padding-top: 5px;
+}
+.buttons {
+  background-color: hsl(26, 11%, 12%);
+  border-radius: 10px;
+  border-width: 1px;
+}
+.image_container {
+  background-color: hsl(10, 30, 50);
+  border-width: 1px;
+  border-color: red;
+  padding: 2px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.image {
+  height: 100%;
+  width: 80%;
+}
+.matrix-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.matrix-row > input {
+  width: 100px;
+}
+.form-filter2D {
+  padding: 20px;
+  margin-top: 5px;
+  border-color: red;
+  border-width: 100px;
+}
+.filter2D-content {
+  display: flex;
+  flex-direction: row;
+  margin:10px;
+}
+.filter2D-content > .image {
+  flex: 1;
+}
+.video-container {
+  display: flex;
+  justify-content: center;
+}
