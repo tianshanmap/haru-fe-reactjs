@@ -1,13 +1,13 @@
 import { useState } from "react"
 // import Rotation from "./modules/rotation.jsx"
-import RotationSection from "./components/rotationSection.jsx"
-import ContrastSection from "./components/contrastSection.jsx"
-import SketchSection from "./components/sketchSection.jsx"
-import DetailEnhanceSection from "./components/detailSection.jsx"
-import Filter2DSection from "./components/filter2DSection.jsx"
-import Filter2DSectionV1 from "./components/filter2DSectionV1.jsx"
-import PlayVideo from "./components/playVideo.jsx"
-import User from "./components/user.jsx"
+import RotationSection from "./rotationSection.jsx"
+import ContrastSection from "./contrastSection.jsx"
+import SketchSection from "./sketchSection.jsx"
+import DetailEnhanceSection from "./detailSection.jsx"
+import EdgeSection from "./edgeSection.jsx"
+import Filter2DSection from "./filter2DSection.jsx"
+import Filter2DSectionV1 from "./filter2DSectionV1.jsx"
+import PlayVideo from "./playVideo.jsx"
 
 function MainSection(){
     const base_url = "http://localhost:8080/image/"
@@ -94,7 +94,8 @@ function MainSection(){
     }
     function handleEdgePreserving(){
         console.log("handle sketch");
-        setSource(base_url + "edgePreserving/" + frame)
+        setFlow("edge");
+        // setSource(base_url + "edgePreserving/" + frame)
     }
     function handleVideo(){
         console.log("handle video");
@@ -153,6 +154,11 @@ function MainSection(){
         console.log("sketch>>>>>>>>>>>>>>>>>>>>>>")
         return( 
             <DetailEnhanceSection base_url={base_url} frame={frame} /> 
+        )    
+    } else if (flow == "edge"){
+        console.log("edge>>>>>>>>>>>>>>>>>>>>>>")
+        return( 
+            <EdgeSection base_url={base_url} frame={frame} /> 
         )    
     } else if (flow == "filter2D"){
         console.log("filter2D>>>>>>>>>>>>>>>>>>>>>>")

@@ -49,7 +49,7 @@ input {
   font-size: 20px;
 }
 .inputs {
-  background-color: hsl(26, 11%, 12%);
+  background-color: hsl(26, 26%, 54%);
   border-radius: 10px;
   border-width: 1px;
   margin-right: 10px;
@@ -98,4 +98,39 @@ input {
 .video-container {
   display: flex;
   justify-content: center;
+}
+li-container {
+  background-color: green;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+table {
+  width: max-content;        /* Shrinks table width strictly to content size */
+  border-collapse: collapse; /* Eliminates the default spacing between borders */
+  border-spacing: 0;         /* Ensures no extra gap remains between cells */
+}
+
+th, td {
+  padding: 2px 4px;          /* Minimal padding to keep text readable but dense */
+  width: 1px;                /* Forces cells to collapse down to their minimum width */
+  white-space: nowrap;       /* Prevents text from breaking onto multiple lines */
+}
+
+.link-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Optional: Add hover/active interactions */
+.link-button:hover,
+.link-button:focus {
+  color: #004499;
+  text-decoration: none;
 }

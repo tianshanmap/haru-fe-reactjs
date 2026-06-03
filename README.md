@@ -6,3 +6,7 @@ npm install
 ```
 npm run dev
 ```
+# Install a new dependency
+```
+npm install react-router-dom
+```
