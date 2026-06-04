@@ -1,5 +1,6 @@
 import { useState,useEffect } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
+import PathSelect from "../PathSelect";
 
 function ExplorerSection(){
     const base_url = "http://localhost:8080/filesystem/"
@@ -18,12 +19,11 @@ function ExplorerSection(){
         console.log("handleSelection-calling remote_url=" + remote_url);
         const response = await fetch(remote_url);
         const data = await response.json();
-        setData(data);
-        // setCurrent(event.target.getAttribute("name"));
-        setList(data.files);
         console.log("data.files=" + JSON.stringify(data));
+        return data;
       } catch (error) {
         console.error("Error fetching data:", error);
+        return null;
       }
     }  
     
@@ -32,7 +32,11 @@ function ExplorerSection(){
       setFlow("");
       setCurrent(event.target.getAttribute("name"));
       var remote_url = base_url + "folder?name=" + event.target.getAttribute("name");        
-      callRemote(remote_url);
+      const data = await callRemote(remote_url);
+      console.log("handleSelection,data=" + data);
+      console.log("handleSelection,data=" + JSON.stringify(data));
+      setData(data);
+      setList(data.files);
     };    
 
     const handleView = (event) => {
@@ -68,10 +72,12 @@ function ExplorerSection(){
         setParent(parentname);
         // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
     }
-    const handleDialogConfirm = () => {
+    const handleDialogConfirm = async () => {
       setIsDialogOpen(false);
       console.log("Action Confirmed! Perform delete logic here.");
-      callRemote(url);
+      const data = await callRemote(url);
+      setData(data);
+      setList(data.files);
     };
 
     const handleDialogCancel = () => {
@@ -79,6 +85,23 @@ function ExplorerSection(){
       console.log("Action Cancelled.");
     };
     
+    const handlePathSelect = async (path) => {
+      console.log("handlePathSelect::" + path);
+      const data = await callRemote(base_url + "folder?name=" + path);
+      // let myOptions = [
+      //   { value: '/home', label: '/home' },
+      //   { value: '/users', label: '/users' },
+      //   { value: '/tmp', label: '/tmp' }
+      // ];
+      const myOptions = data.files
+        .filter(item => item.kind === "folder")
+        .map(item => ({value: item.path, label: item.path}));      
+      myOptions.unshift({value: "/", label: "/"});  
+      myOptions.unshift({value: "none", label: "none"});  
+      console.log("handlePathSelect::myOptions=" + JSON.stringify(myOptions));  
+      return myOptions;
+     };
+
     useEffect(() => {
       // 1. Declare the inner async function
       const fetchData = async () => {
@@ -156,6 +179,7 @@ function ExplorerSection(){
     } else {
       return (
         <div className="main">
+          {/* <PathSelect onChange={handlePathSelect}/> */}
           <div className="table-container">
             <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
