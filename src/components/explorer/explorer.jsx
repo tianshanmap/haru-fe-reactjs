@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
-import PathSelect from "../PathSelect";
+import MoveCopyDialog from "../MoveCopyDialog";
 
 function ExplorerSection(){
     const base_url = "http://localhost:8080/filesystem/"
@@ -12,7 +12,10 @@ function ExplorerSection(){
     const [error, setError] = useState("");
     const [flow, setFlow] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
+    const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
     const [message, setMessage] = useState("");
+    const [targetMoveCopyPath, setTargetMoveCopyPath] = useState("");
 
     const callRemote = async (remote_url) => {
       try {
@@ -62,6 +65,36 @@ function ExplorerSection(){
       setUrl(encodedURL);        
     };
  
+    function handleDownload(event){
+        setIsDialogOpen(true);
+        setMessage("Are you sure to delete " + event.target.getAttribute("name") + "?");
+        setCurrent(event.target.getAttribute("name"));
+        var parentname = event.target.getAttribute("parent");
+        setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        // setFlow("delete")
+        setParent(parentname);
+        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
+    }
+    function handleCopy(event){
+        setIsCopyDialogOpen(true);
+        setMessage("Are you sure to copy " + event.target.getAttribute("name") + "?");
+        setCurrent(event.target.getAttribute("name"));
+        var parentname = event.target.getAttribute("parent");
+        setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        // setFlow("delete")
+        setParent(parentname);
+        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
+    }
+    function handleMove(event){
+        setIsMoveDialogOpen(true);
+        setMessage("Are you sure to move " + event.target.getAttribute("name") + "?");
+        setCurrent(event.target.getAttribute("name"));
+        var parentname = event.target.getAttribute("parent");
+        setUrl(base_url + "move?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        // setFlow("delete")
+        setParent(parentname);
+        // callRemote(base_url + "move?name=" + event.target.getAttribute("name") + "&target=" + )
+    }
     function handleDelete(event){
         setIsDialogOpen(true);
         setMessage("Are you sure to delete " + event.target.getAttribute("name") + "?");
@@ -79,14 +112,43 @@ function ExplorerSection(){
       setData(data);
       setList(data.files);
     };
+    const handleMoveDialogConfirm = async () => {
+      setIsMoveDialogOpen(false);
+      console.log("handleMoveDialogConfirm::Action Confirmed! Perform move logic here.");
+      let moveUrl = base_url + "move?name=" + current + "&parent=" + targetMoveCopyPath;
+      console.log("handleMoveDialogConfirm::moveUrl=" + moveUrl);
+      const data = await callRemote(moveUrl);
+      setData(data);
+      setList(data.files);
+      setFlow("");
+    };
+    const handleCopyDialogConfirm = async () => {
+      setIsCopyDialogOpen(false);
+      console.log("Action Confirmed! Perform copy logic here.");
+      let copyUrl = base_url + "copy?name=" + current + "&parent=" + targetMoveCopyPath;
+      console.log("handleCopyDialogConfirm::copyUrl=" + copyUrl);
+      const data = await callRemote(copyUrl);
+      setData(data);
+      setList(data.files);
+      setFlow("");
+    };
 
     const handleDialogCancel = () => {
       setIsDialogOpen(false);
       console.log("Action Cancelled.");
     };
+    const handleMoveDialogCancel = () => {
+      setIsMoveDialogOpen(false);
+      console.log("Action Cancelled.");
+    };
+    const handleCopyDialogCancel = () => {
+      setIsCopyDialogOpen(false);
+      console.log("Action Cancelled.");
+    };
     
     const handlePathSelect = async (path) => {
       console.log("handlePathSelect::" + path);
+      setTargetMoveCopyPath(path);
       const data = await callRemote(base_url + "folder?name=" + path);
       // let myOptions = [
       //   { value: '/home', label: '/home' },
@@ -179,7 +241,6 @@ function ExplorerSection(){
     } else {
       return (
         <div className="main">
-          {/* <PathSelect onChange={handlePathSelect}/> */}
           <div className="table-container">
             <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
@@ -206,8 +267,19 @@ function ExplorerSection(){
                   <tr>
                     {item.kind === 'folder' && <td><a href="#" name={item.path} onClick={handleSelection}>{item.name}</a></td>}
                     {item.kind === 'file' && <td>{item.name}</td>}
-                    {item.kind === 'folder' && <td><button name={item.path} parent={item.parent_path} onClick={handleDelete} className="link-button">Delete</button></td>}
-                    {item.kind === 'file' && <td><button name={item.path} parent={item.parent_path} onClick={handleView} className="link-button">View</button>&nbsp;&nbsp;<button name={item.path} parent={item.parent_path} onClick={handleView} className="link-button">Download</button>&nbsp;&nbsp;<button name={item.path} parent={item.parent_path} onClick={handleDelete} className="link-button">Delete</button></td>}
+                    {item.kind === 'folder' && <td>
+                                                <button name={item.path} parent={item.parent_path} onClick={handleDownload} className="link-button">Download</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleMove} className="link-button">Move</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleCopy} className="link-button">Copy</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleDelete} className="link-button">Delete</button>
+                                                </td>}
+                    {item.kind === 'file' && <td>
+                                                <button name={item.path} parent={item.parent_path} onClick={handleView} className="link-button">View</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleDownload} className="link-button">Download</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleMove} className="link-button">Move</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleCopy} className="link-button">Copy</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleDelete} className="link-button">Delete</button>
+                                                </td>}
                   </tr>
                 ))}
               </tbody>
@@ -218,6 +290,20 @@ function ExplorerSection(){
               message={message}
               onConfirm={handleDialogConfirm}
               onCancel={handleDialogCancel}/>
+            <MoveCopyDialog 
+              isOpen={isMoveDialogOpen} 
+              title="Move a File/Folder" 
+              message={message}
+              onConfirm={handleMoveDialogConfirm}
+              onCancel={handleMoveDialogCancel}
+              onPathSelect={handlePathSelect}/>
+            <MoveCopyDialog 
+              isOpen={isCopyDialogOpen} 
+              title="Copy a File/Folder" 
+              message={message}
+              onConfirm={handleCopyDialogConfirm}
+              onCancel={handleCopyDialogCancel}
+              onPathSelect={handlePathSelect}/>
           </div>
         </div>
       );
