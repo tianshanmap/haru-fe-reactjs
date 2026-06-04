@@ -134,3 +134,12 @@ th, td {
   color: #004499;
   text-decoration: none;
 }
+.table-container {
+  padding-left: 50px;
+  padding-right: 500px;
+}
+.table-td-box {
+  background-color: lightgrey;
+  border-width: 1px;
+  color: black;
+}
