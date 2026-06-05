@@ -1,6 +1,8 @@
 import { useState,useEffect } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
 import MoveCopyDialog from "../MoveCopyDialog";
+import ClientDownload from "../client_download";
+import ServerDownload from "../server_download";
 
 function ExplorerSection(){
     const base_url = "http://localhost:8080/filesystem/"
@@ -12,6 +14,7 @@ function ExplorerSection(){
     const [error, setError] = useState("");
     const [flow, setFlow] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
     const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
     const [message, setMessage] = useState("");
@@ -65,15 +68,17 @@ function ExplorerSection(){
       setUrl(encodedURL);        
     };
  
-    function handleDownload(event){
-        setIsDialogOpen(true);
-        setMessage("Are you sure to delete " + event.target.getAttribute("name") + "?");
+    const handleDownload = async (event) => {
+        setIsDownloadOpen(true);
         setCurrent(event.target.getAttribute("name"));
-        var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
-        // setFlow("delete")
+        const parentname = event.target.getAttribute("parent");
+        const target_url = base_url + "download?name=" + event.target.getAttribute("name") + "&parent=" + parentname; 
+        setUrl(target_url);        
+        setFlow("")
         setParent(parentname);
-        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
+        // const data = await callRemote(target_url)
+        // setData(data);
+        // setList(data.files);
     }
     function handleCopy(event){
         setIsCopyDialogOpen(true);
@@ -241,6 +246,8 @@ function ExplorerSection(){
     } else {
       return (
         <div className="main">
+          <ClientDownload isOpen={isDownloadOpen} name={current} />
+          <ServerDownload isOpen={isDownloadOpen} name={current} remote_url={url} />
           <div className="table-container">
             <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
