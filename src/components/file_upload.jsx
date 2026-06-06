@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const FileUploadForm = ({ name,remote_url }) => {
+const FileUploadForm = ({ name,remote_url,onConfirm }) => {
 
   console.log("FileUploadForm::remote_url=" + remote_url);  
   const [file, setFile] = useState(null);
@@ -43,14 +43,16 @@ const FileUploadForm = ({ name,remote_url }) => {
         throw new Error(`Upload failed with status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.text();
       setStatus('success');
       setMessage('File uploaded successfully!');
       console.log('Server response:', data);
     } catch (error) {
       setStatus('error');
       setMessage(error.message || 'Something went wrong.');
+      console.log('error.message:', error.message);
     }
+    onConfirm();
   };
 
   return (

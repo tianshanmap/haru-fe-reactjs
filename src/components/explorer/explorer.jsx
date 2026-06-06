@@ -165,6 +165,14 @@ function ExplorerSection(){
       setList(data.files);
       setFlow("");
     };
+    const handleUploadDialogConfirm = async () => {
+      setIsUploadDialogOpen(false);
+      let copyUrl = base_url + "folder?name=" + current;
+      const data = await callRemote(copyUrl);
+      setData(data);
+      setList(data.files);
+      setFlow("");
+    };
     const handleCreateDialogConfirm = async (name) => {
       setIsCreateDialogOpen(false);
       console.log("Action Confirmed! Perform copy logic here.");
@@ -333,6 +341,7 @@ function ExplorerSection(){
               title="Upload a File" 
               message={message}
               onCancel={handleUploadDialogCancel}
+              onConfirm={handleUploadDialogConfirm}
               name={current}
               remote_url={url}
               />

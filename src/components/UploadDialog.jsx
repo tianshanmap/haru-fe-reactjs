@@ -1,7 +1,7 @@
 
 import FileUploadForm from "./file_upload";
 
-const UploadDialog = ({ isOpen, title, message, onCancel,name,remote_url }) => {
+const UploadDialog = ({ isOpen, title, message, onCancel,onConfirm,name,remote_url }) => {
   if (!isOpen) return null;
   return (
     <div style={styles.overlay}>
@@ -10,7 +10,7 @@ const UploadDialog = ({ isOpen, title, message, onCancel,name,remote_url }) => {
         <p>{message}</p>
         <p>{remote_url}</p>
         <div style={styles.actions}>
-          <FileUploadForm name={name} remote_url={remote_url}/>
+          <FileUploadForm name={name} remote_url={remote_url} onConfirm={onConfirm}/>
           <button onClick={onCancel} style={styles.cancelBtn}>
             Cancel
           </button>
