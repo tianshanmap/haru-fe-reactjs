@@ -1,11 +1,11 @@
 import { useState,useEffect } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
 import MoveCopyDialog from "../MoveCopyDialog";
-import ServerDownload from "../server_download";
 import UploadDialog from "../UploadDialog";
 import DownloadDialog from "../DownloadDialog";
 import CreateDialog from "../CreateDialog";
 import ExplorerTree from "./explorer_tree"
+import ImageContainer from "./ImageContainer";
 
 function ExplorerSection(){
     const base_url = "http://localhost:8080/filesystem/"
@@ -38,24 +38,28 @@ function ExplorerSection(){
       }
     }  
     
-    const handleSelection = async (event) => {
-      console.log("handleSelection");
+    const handleNavigate = async (name) => {
+      console.log("handleNavigate");
       setFlow("");
-      setCurrent(event.target.getAttribute("name"));
-      var remote_url = base_url + "folder?name=" + event.target.getAttribute("name");        
+      setCurrent(name);
+      var remote_url = base_url + "folder?name=" + name;        
       const data = await callRemote(remote_url);
       console.log("handleSelection,data=" + data);
       console.log("handleSelection,data=" + JSON.stringify(data));
       setData(data);
       setList(data.files);
     };    
+    const handleSelection = async (event) => {
+      let name = event.target.getAttribute("name")
+      handleNavigate(name);
+    };    
 
     const handleView = (event) => {
       event.preventDefault(); // Stops the page from reloading
       var filename = event.target.getAttribute("name");
       var parentname = event.target.getAttribute("parent");
-      console.log("filename=" + filename);
-      console.log("parentname=" + parentname);
+      console.log("handleView::filename=" + filename);
+      console.log("handleView::parentname=" + parentname);
       setCurrent(filename);
       setParent(parentname);
       if (filename.endsWith(".mp4")){
@@ -69,7 +73,7 @@ function ExplorerSection(){
       }
       const filename_encoded = filename.replace(/\+/g, '%2B').replace(/\&/g, '%26');
       const encodedURL = base_url + "view?name=" + filename_encoded;
-      console.log("encodedURL=" + encodedURL);
+      console.log("handleView::encodedURL=" + encodedURL);
       setUrl(encodedURL);        
     };
  
@@ -283,12 +287,21 @@ function ExplorerSection(){
         </div>  
       )
     } else if (flow == "image"){
-      console.log("processing image...")
+      console.log("processing image...");
+      console.log("processing image...parent=" + JSON.stringify(parent));
+      let image_list = list.map(x => x.path);
       return (
-        <div className="main">
-          <a href="#" name={parent} onClick={handleSelection}>Back</a>
-          <img src={url}></img>
-        </div>  
+        // <div className="main">
+        //   <a href="#" name={parent} onClick={handleSelection}>Back</a>
+        //   <img src={url} width="50%" height="50%"></img>
+        // </div>  
+        <ImageContainer 
+          name={current}
+          parentName={parent}
+          list={image_list}
+          base_url={base_url}
+          onExitAction={handleNavigate}
+          />
       )
     } else if (flow == "pdf"){
       console.log("processing pdf...")
