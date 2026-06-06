@@ -1,4 +1,5 @@
 function ExplorerTree({data,list,handleSelection,handleDownload,handleUpload,handleCopy,handleMove,handleDelete,handleView}){
+  console.log("ExplorerTree,handleSelection=" + handleSelection);
   return (
     <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
       <thead>

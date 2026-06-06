@@ -269,6 +269,7 @@ function ExplorerSection(){
             <ExplorerTree 
               data={data}
               list={list}
+              handleSelection={handleSelection}
               handleDownload={handleDownload}
               handleUpload={handleUpload}
               handleCopy={handleCopy}
