@@ -3,6 +3,7 @@ import ConfirmationDialog from "../ConfirmationDialog";
 import MoveCopyDialog from "../MoveCopyDialog";
 import ServerDownload from "../server_download";
 import UploadDialog from "../UploadDialog";
+import DownloadDialog from "../DownloadDialog";
 import ExplorerTree from "./explorer_tree"
 
 function ExplorerSection(){
@@ -15,10 +16,10 @@ function ExplorerSection(){
     const [error, setError] = useState("");
     const [flow, setFlow] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
     const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
     const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+    const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [targetMoveCopyPath, setTargetMoveCopyPath] = useState("");
 
@@ -71,12 +72,13 @@ function ExplorerSection(){
     };
  
     const handleDownload = async (event) => {
-        setIsDownloadOpen(true);
+        setIsDownloadDialogOpen(true);
         setCurrent(event.target.getAttribute("name"));
         const parentname = event.target.getAttribute("parent");
         const target_url = base_url + "download?name=" + event.target.getAttribute("name") + "&parent=" + parentname; 
         setUrl(target_url);        
-        setFlow("")
+        setMessage("Are you sure to download " + event.target.getAttribute("name") + "?");
+        // setFlow("")
         setParent(parentname);
         // const data = await callRemote(target_url)
         // setData(data);
@@ -166,6 +168,10 @@ function ExplorerSection(){
     };
     const handleUploadDialogCancel = () => {
       setIsUploadDialogOpen(false);
+      console.log("Action Cancelled.");
+    };
+    const handleDownloadDialogCancel = () => {
+      setIsDownloadDialogOpen(false);
       console.log("Action Cancelled.");
     };
     
@@ -264,7 +270,6 @@ function ExplorerSection(){
     } else {
       return (
         <div className="main">
-          <ServerDownload isOpen={isDownloadOpen} name={current} remote_url={url} />
           <div className="table-container">
             <ExplorerTree 
               data={data}
@@ -302,6 +307,14 @@ function ExplorerSection(){
               title="Upload a File" 
               message={message}
               onCancel={handleUploadDialogCancel}
+              name={current}
+              remote_url={url}
+              />
+            <DownloadDialog 
+              isOpen={isDownloadDialogOpen} 
+              title="Download a File/Folder" 
+              message={message}
+              onCancel={handleDownloadDialogCancel}
               name={current}
               remote_url={url}
               />
