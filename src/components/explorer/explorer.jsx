@@ -4,6 +4,7 @@ import MoveCopyDialog from "../MoveCopyDialog";
 import ServerDownload from "../server_download";
 import UploadDialog from "../UploadDialog";
 import DownloadDialog from "../DownloadDialog";
+import CreateDialog from "../CreateDialog";
 import ExplorerTree from "./explorer_tree"
 
 function ExplorerSection(){
@@ -20,6 +21,7 @@ function ExplorerSection(){
     const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
     const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [targetMoveCopyPath, setTargetMoveCopyPath] = useState("");
 
@@ -116,6 +118,16 @@ function ExplorerSection(){
         setParent(parentname);
         // callRemote(base_url + "move?name=" + event.target.getAttribute("name") + "&target=" + )
     }
+    function handleNew(event){
+        setIsCreateDialogOpen(true);
+        setMessage("Are you sure to create a new folder under " + event.target.getAttribute("name") + "?");
+        setCurrent(event.target.getAttribute("name"));
+        var parentname = event.target.getAttribute("parent");
+        setUrl(base_url + "create?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        // setFlow("delete")
+        setParent(parentname);
+        // callRemote(base_url + "move?name=" + event.target.getAttribute("name") + "&target=" + )
+    }
     function handleDelete(event){
         setIsDialogOpen(true);
         setMessage("Are you sure to delete " + event.target.getAttribute("name") + "?");
@@ -153,6 +165,15 @@ function ExplorerSection(){
       setList(data.files);
       setFlow("");
     };
+    const handleCreateDialogConfirm = async (name) => {
+      setIsCreateDialogOpen(false);
+      console.log("Action Confirmed! Perform copy logic here.");
+      let createUrl = base_url + "create?name=" + name + "&parent=" + current;
+      const data = await callRemote(createUrl);
+      setData(data);
+      setList(data.files);
+      setFlow("");
+    };
 
     const handleDialogCancel = () => {
       setIsDialogOpen(false);
@@ -172,6 +193,10 @@ function ExplorerSection(){
     };
     const handleDownloadDialogCancel = () => {
       setIsDownloadDialogOpen(false);
+      console.log("Action Cancelled.");
+    };
+    const handleCreateDialogCancel = () => {
+      setIsCreateDialogOpen(false);
       console.log("Action Cancelled.");
     };
     
@@ -280,6 +305,7 @@ function ExplorerSection(){
               handleCopy={handleCopy}
               handleMove={handleMove}
               handleDelete={handleDelete}
+              handleNew={handleNew}
               handleView={handleView}
               />
             <ConfirmationDialog 
@@ -317,6 +343,13 @@ function ExplorerSection(){
               onCancel={handleDownloadDialogCancel}
               name={current}
               remote_url={url}
+              />
+            <CreateDialog 
+              isOpen={isCreateDialogOpen} 
+              title="Create a Folder" 
+              message={message}
+              onCancel={handleCreateDialogCancel}
+              onConfirm={handleCreateDialogConfirm}
               />
           </div>
         </div>
