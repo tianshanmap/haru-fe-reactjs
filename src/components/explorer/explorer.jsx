@@ -289,7 +289,7 @@ function ExplorerSection(){
     } else if (flow == "image"){
       console.log("processing image...");
       console.log("processing image...parent=" + JSON.stringify(parent));
-      let image_list = list.map(x => x.path);
+      let image_list = list.filter(x => x.path.endsWith(".jpg") || x.path.endsWith(".jpeg") || x.path.endsWith(".png")).map(x => x.path);
       return (
         // <div className="main">
         //   <a href="#" name={parent} onClick={handleSelection}>Back</a>
