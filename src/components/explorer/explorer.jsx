@@ -1,8 +1,8 @@
 import { useState,useEffect } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
 import MoveCopyDialog from "../MoveCopyDialog";
-import ClientDownload from "../client_download";
 import ServerDownload from "../server_download";
+import UploadDialog from "../UploadDialog";
 
 function ExplorerSection(){
     const base_url = "http://localhost:8080/filesystem/"
@@ -17,6 +17,7 @@ function ExplorerSection(){
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
     const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
+    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [targetMoveCopyPath, setTargetMoveCopyPath] = useState("");
 
@@ -90,6 +91,18 @@ function ExplorerSection(){
         setParent(parentname);
         // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
     }
+    function handleUpload(event){
+        console.log("handleUpload is called");
+        setIsUploadDialogOpen(true);
+        setMessage("Are you sure to upload to folder " + event.target.getAttribute("name") + "?");
+        setCurrent(event.target.getAttribute("name"));
+        var parentname = event.target.getAttribute("parent");
+        setUrl(base_url + "upload");        
+        // setFlow("delete")
+        setParent(parentname);
+        console.log("handleUpload is completed.");
+        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
+    }
     function handleMove(event){
         setIsMoveDialogOpen(true);
         setMessage("Are you sure to move " + event.target.getAttribute("name") + "?");
@@ -148,6 +161,10 @@ function ExplorerSection(){
     };
     const handleCopyDialogCancel = () => {
       setIsCopyDialogOpen(false);
+      console.log("Action Cancelled.");
+    };
+    const handleUploadDialogCancel = () => {
+      setIsUploadDialogOpen(false);
       console.log("Action Cancelled.");
     };
     
@@ -246,7 +263,6 @@ function ExplorerSection(){
     } else {
       return (
         <div className="main">
-          <ClientDownload isOpen={isDownloadOpen} name={current} />
           <ServerDownload isOpen={isDownloadOpen} name={current} remote_url={url} />
           <div className="table-container">
             <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
@@ -276,6 +292,7 @@ function ExplorerSection(){
                     {item.kind === 'file' && <td>{item.name}</td>}
                     {item.kind === 'folder' && <td>
                                                 <button name={item.path} parent={item.parent_path} onClick={handleDownload} className="link-button">Download</button>&nbsp;&nbsp;
+                                                <button name={item.path} parent={item.parent_path} onClick={handleUpload} className="link-button">Upload</button>&nbsp;&nbsp;
                                                 <button name={item.path} parent={item.parent_path} onClick={handleMove} className="link-button">Move</button>&nbsp;&nbsp;
                                                 <button name={item.path} parent={item.parent_path} onClick={handleCopy} className="link-button">Copy</button>&nbsp;&nbsp;
                                                 <button name={item.path} parent={item.parent_path} onClick={handleDelete} className="link-button">Delete</button>
@@ -311,6 +328,14 @@ function ExplorerSection(){
               onConfirm={handleCopyDialogConfirm}
               onCancel={handleCopyDialogCancel}
               onPathSelect={handlePathSelect}/>
+            <UploadDialog 
+              isOpen={isUploadDialogOpen} 
+              title="Upload a File" 
+              message={message}
+              onCancel={handleUploadDialogCancel}
+              name={current}
+              remote_url={url}
+              />
           </div>
         </div>
       );

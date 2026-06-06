@@ -1,8 +1,8 @@
 const ServerDownload = ({ isOpen,name,remote_url }) => {
+  if (!isOpen) return null;
   console.log("ServerDownload::isOpen=" + isOpen);
   console.log("ServerDownload::name=" + name);
   console.log("ServerDownload::remote_url=" + remote_url);
-  if (!isOpen) return null;
   const handleDownload = async () => {
     try {
       const response = await fetch(remote_url);
