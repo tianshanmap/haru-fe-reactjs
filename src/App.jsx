@@ -3,6 +3,7 @@ import Header from './components/header.jsx'
 import Footer from './components/footer.jsx'
 import MainSection from './components/opencv/mainSection.jsx'
 import ExplorerSection from './components/explorer/explorer.jsx'
+import CanvasContainer from './components/common/CanvasContainer.jsx'
 import { BrowserRouter as Router, Routes, Route,useNavigate } from 'react-router-dom';
 
 const MediaCenter = () => {
@@ -20,6 +21,15 @@ const FileExplorer = () => {
     <div className='container'>
         <Header/>
         <ExplorerSection/>
+        <Footer/>
+    </div>
+  )
+}
+const ConvasHome = () => {
+  return (
+    <div className='container'>
+        <Header/>
+        <CanvasContainer/>
         <Footer/>
     </div>
   )
@@ -50,6 +60,7 @@ function App() {
         <Route path="/" element={<Home/>} />
         <Route path="/media" element={<MediaCenter/>} />
         <Route path="/file-explorer" element={<FileExplorer/>} />
+        <Route path="/canvas" element={<ConvasHome/>} />
         <Route path="/about" element={<About/>} />
       </Routes>
     </Router>
