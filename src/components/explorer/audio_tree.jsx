@@ -18,9 +18,9 @@ function AudioTree({isOpen,data,base_url,onComplete}){
       console.log("handleCheckboxChange total-audio=" + selected_audio);
     }    
   };
-  const handleConfirm = (event) => {
+  const handleConfirm = async (event) => {
       console.log("handleConfirm total-audio=" + selected_audio);
-      onComplete(event,selected_audio);
+      await onComplete(event,selected_audio);
   }
   return (
       <div className={styles.auto_table_container}>

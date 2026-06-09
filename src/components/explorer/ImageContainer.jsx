@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./ImageContainer.module.css"
 import AudioTree from "./audio_tree";
+import VideoTree from "./video_tree";
 import ImageBlock from "./image_block";
 
 const ImageContainer = ({ name,parentName,list,base_url,onExitAction }) => {
@@ -10,12 +11,14 @@ const ImageContainer = ({ name,parentName,list,base_url,onExitAction }) => {
   const [imageList,setImageList] = useState(list);
   const [isAudioOpen,setIsAudioOpen] = useState(false);
   const [isImageOpen,setIsImageOpen] = useState(true);
+  const [isVideoOpen,setIsVideoOpen] = useState(false);
   const [audioList,setAudioList] = useState({});
+  const [videoFile,setVideoFile] = useState("");
 
-  console.log("ImageContainer::name=" + name);  
-  console.log("ImageContainer::parent=" + parentName);  
-  console.log("ImageContainer::list=" + JSON.stringify(list));  
-  console.log("ImageContainer::onExitAction=" + onExitAction);  
+  // console.log("ImageContainer::name=" + name);  
+  // console.log("ImageContainer::parent=" + parentName);  
+  // console.log("ImageContainer::list=" + JSON.stringify(list));  
+  // console.log("ImageContainer::onExitAction=" + onExitAction);  
   const callRemote = async (remote_url) => {
     try {
       console.log("handleSelection-calling remote_url=" + remote_url);
@@ -91,11 +94,38 @@ const ImageContainer = ({ name,parentName,list,base_url,onExitAction }) => {
   }
   const handleAudioConfirm = async (event,list) => {
     console.log("handleAudioConfirm=list" + list);
-    setIsAudioOpen(false);
-    setIsImageOpen(true);
-  }  
-  console.log("styles=" + JSON.stringify(styles));
-  console.log("styles.div_image_cmd=" + styles.div_image_cmd);
+    let request = {
+      "video_name": "australia_trip",
+      "image_path": parentName,
+      "audio_files": list
+    };
+    console.log("handleAudioConfirm::request=" + JSON.stringify(request));
+    try {
+         let remote_url = "http://localhost:8080/filesystem/video/generate";
+         const response = await fetch(remote_url, {
+           method: 'POST', // Explicitly declare POST method
+           headers: {
+             'Content-Type': 'application/json', // Instruct the server you are sending JSON data
+           },
+           body: JSON.stringify(request), // Serialize JavaScript object to JSON string
+         });
+
+         if (!response.ok) {
+           throw new Error('Network response was not ok');
+         }
+
+         const data = await response.json(); // Parse the server response
+         setVideoFile(data.file);
+         setIsAudioOpen(false);
+         setIsImageOpen(false);
+         setIsVideoOpen(true);
+         console.log('Success:', data);
+    } catch (error) {
+         console.error('Error:', error);
+    }
+  };
+  console.log("ImageContainer::data from video-generate=" + JSON.stringify(videoFile));
+  // console.log("styles.div_image_cmd=" + styles.div_image_cmd);
   return (
     <div className="main">
         <div className={styles.div_image_wrapper}>
@@ -117,6 +147,9 @@ const ImageContainer = ({ name,parentName,list,base_url,onExitAction }) => {
               </div>
               <div className={styles.div_image_container_audio}>
                 <AudioTree isOpen={isAudioOpen} data={audioList} base_url={base_url} onComplete={handleAudioConfirm}/>
+              </div>
+              <div className={styles.div_image_container_audio}>
+                <VideoTree isOpen={isVideoOpen} data={videoFile} base_url={base_url}/>
               </div>
             </div>
         </div>
