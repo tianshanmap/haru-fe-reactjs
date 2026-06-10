@@ -1,11 +1,33 @@
+import { useState,useEffect } from "react";
 import styles from "./audio_tree.module.css";
 
-function AudioTree({isOpen,data,base_url,onComplete}){
-  console.log("AudioTree,handleSelection=");
+function AudioTree({isOpen,base_url,onComplete}){
+  // console.log("AudioTree-started,isOpen=" + isOpen + ",base_url=" + base_url);
+  const [data,setData] = useState({});
+  console.log("Executing useEffect...");
+  useEffect(() => {
+    console.log("AudioTree-started,useEffect is called");
+    // 1. Declare the inner async function
+    const fetchData = async () => {
+      try {
+        const response = await fetch(base_url + "video/audio_list");
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const result = await response.json();
+        setData(result);
+        console.log(result.files);
+      } catch (err) {
+        setError(err.message);
+        console.log(err.message);
+      }
+    };
+    // 2. Invoke the function immediately
+    fetchData();
+  }, []); 
+  console.log("Executing useEffect...1");
   let selected_audio = [];
-  if(!isOpen){
-    return null;
-  }
+
   const handleCheckboxChange = (event) => {
     console.log("handleCheckboxChange event=" + event.target.id);
     if (event.target.checked){
@@ -22,6 +44,7 @@ function AudioTree({isOpen,data,base_url,onComplete}){
       console.log("handleConfirm total-audio=" + selected_audio);
       await onComplete(event,selected_audio);
   }
+  console.log("start rendering...1");
   return (
       <div className={styles.auto_table_container}>
         <table className={styles.audio_table}>

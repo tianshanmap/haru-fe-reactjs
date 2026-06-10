@@ -1,9 +1,6 @@
 import styles from "./audio_tree.module.css";
 
-function VideoTree({isOpen,data,base_url}){
-  if(!isOpen){
-    return null;
-  }
+function VideoTree({data,base_url}){
   console.log("VideoTree-data=" + JSON.stringify(data));
   return (
       <div className={styles.auto_table_container}>
