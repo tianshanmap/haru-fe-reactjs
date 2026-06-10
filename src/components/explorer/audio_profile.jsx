@@ -3,6 +3,8 @@ import styles from "./audio_tree.module.css";
 
 const AudioProfile = ({base_url,image_path,onComplete}) => {
   const [data, setData] = useState(null);
+  const [videoName, setVideoName] = useState("trip");
+  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   console.log("component::UserProfile::base_url=" + base_url);
 
@@ -40,9 +42,14 @@ const AudioProfile = ({base_url,image_path,onComplete}) => {
   }
 
   const handleConfirm = async (event) => {
+    if (selected_audio.length === 0) {
+        console.log("The list is empty!");
+        setErrorMessage("Please choose audio for the video and then click confirm");
+        return;
+    }
     console.log("handleConfirm event=" + event.target.id);
     let request = {
-      "video_name": "australia_trip",
+      "video_name": videoName,
       "image_path": image_path,
       "audio_files": selected_audio
     };
@@ -67,9 +74,14 @@ const AudioProfile = ({base_url,image_path,onComplete}) => {
          console.error('Error:', error);
     }
   }
-  console.log("component::UserProfile::base_url=" + base_url);
+  const onVideoNameChange = (event) => {
+    setVideoName(event.target.value);
+  }
+
   return (
-        <div className={styles.auto_table_container}>
+        <div className={styles.audio_profile_container}>
+          <div className={styles.div_audio_container}>
+            <p>{errorMessage}</p>
             <table className={styles.audio_table}>
             <thead>
                 <tr>
@@ -99,9 +111,12 @@ const AudioProfile = ({base_url,image_path,onComplete}) => {
                 ))}
             </tbody>
             </table>
-            <div>
+          </div>
+          <div className={styles.div_command_container}>
+            <label>Video Name:</label>
+            <input type="text" name="video_name" value={videoName} onChange={onVideoNameChange}/>
             <button onClick={handleConfirm}>Confirm</button>
-            </div>
+          </div>
         </div>
     );
 };

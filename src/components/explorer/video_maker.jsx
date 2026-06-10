@@ -68,8 +68,8 @@ function VideoMaker({isOpen,base_url,image_path}){
         {/* <button onClick={onTestClick}>Test</button> */}
         {/* <AudioProfile isOpen={isVideoOpen} base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/> */}
         {/* <AudioTree isOpen={isAudioOpen} base_url={base_url} onComplete={handleAudioConfirm} /> */}
-         {isAudioOpen && <AudioProfile isOpen={true} base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/>}
-         {isVideoOpen && <VideoTree isOpen={true} data={videoFile} base_url={base_url}/>}
+         {isAudioOpen && <AudioProfile base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/>}
+         {isVideoOpen && <VideoTree data={videoFile} base_url={base_url}/>}
       </div>
   );
 }
