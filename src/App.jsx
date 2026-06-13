@@ -4,6 +4,7 @@ import Footer from './components/footer.jsx'
 import MainSection from './components/opencv/mainSection.jsx'
 import ExplorerSection from './components/explorer/explorer.jsx'
 import CanvasContainer from './components/common/CanvasContainer.jsx'
+import DragAndDrop from './components/common/DragAndDrop.jsx'
 import { BrowserRouter as Router, Routes, Route,useNavigate } from 'react-router-dom';
 
 const MediaCenter = () => {
@@ -52,6 +53,15 @@ const Home = () => {
     </div>
   )
 }
+const DragAndDropHome = () => {
+  return (
+    <div className='container'>
+        <Header/>
+        <DragAndDrop base_url="http://localhost:8080/filesystem/" name="/Users/developer/T9/travels/processed/174-alison/jpeg" />
+        <Footer/>
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -62,6 +72,7 @@ function App() {
         <Route path="/file-explorer" element={<FileExplorer/>} />
         <Route path="/canvas" element={<ConvasHome/>} />
         <Route path="/about" element={<About/>} />
+        <Route path="/draganddrop" element={<DragAndDropHome/>} />
       </Routes>
     </Router>
   )

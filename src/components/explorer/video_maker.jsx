@@ -2,28 +2,99 @@ import { useState,useEffect } from "react";
 import styles from "./video_maker.module.css";
 import VideoTree from "./video_tree";
 import AudioProfile from "./audio_profile";
+import AudioSelector from "./audio_selector";
+import ImageProfile from "./image_profile";
+import DragAndDropProfile from "./DragAndDrop_profile";
+import VideoNameSelector from "./video_name_selector";
 
 function VideoMaker({isOpen,base_url,image_path}){
   console.log("VideoMaker,start");
+  const [imageList,setImageList] = useState([]);
+  const [audioName,setAudioName] = useState("");
+  const [videoName,setVideoName] = useState("");
+  const [videoPath,setVideoPath] = useState("");
+  const [isImageOpen,setIsImageOpen] = useState(false);
   const [isAudioOpen,setIsAudioOpen] = useState(false);
-  const [isVideoOpen,setIsVideoOpen] = useState(false);
-  const [videoFile,setVideoFile] = useState("");
+  const [isVideoNameOpen,setIsVideoNameOpen] = useState(false);
+  const [isVideoPlayerOpen,setIsVideoPlayerOpen] = useState(false);
 
   useEffect(() => {
     // Logic for turning on/off goes here (e.g., after loading)
-    setIsVideoOpen(false);
-    setIsAudioOpen(true);
+    setIsImageOpen(true);
+    setIsVideoPlayerOpen(false);
+    setIsAudioOpen(false);
+    setIsVideoNameOpen(false);
   }, []); // Empty dependency array means this runs on mount
 
   if(!isOpen){
     return null;
   }
-  // const handleAudioConfirm = async (event,list) => {
-  //   console.log("handleAudioConfirm=list" + list);
+  const handleDragAndDrop = (data) => {
+    setImageList(data);
+    setIsImageOpen(false);
+    setIsAudioOpen(true);
+    setIsVideoNameOpen(false);
+    setIsVideoPlayerOpen(false);
+  }
+
+  const handleAudioConfirm = (data) => {
+    setAudioName(data.name);
+    setIsImageOpen(false);
+    setIsAudioOpen(false);
+    setIsVideoNameOpen(true);
+    setIsVideoPlayerOpen(false);
+  }
+
+  const handleVideoName = async (name) => {
+    if (imageList.length === 0) {
+        console.log("The list is empty!");
+        setErrorMessage("Please choose audio for the video and then click confirm");
+        return;
+    }
+    setVideoName(name);
+    let request = {
+      "audio_name": audioName,
+      "video_name": name,
+      "image_path": image_path,
+      "image_files": imageList
+    };
+    console.log("handleAudioConfirm::request=" + JSON.stringify(request));
+    try {
+         let remote_url = base_url + "video/generate/v1";
+         const response = await fetch(remote_url, {
+           method: 'POST', // Explicitly declare POST method
+           headers: {
+             'Content-Type': 'application/json', // Instruct the server you are sending JSON data
+           },
+           body: JSON.stringify(request), // Serialize JavaScript object to JSON string
+         });
+
+         if (!response.ok) {
+           throw new Error('Network response was not ok');
+         }
+
+         const data = await response.json(); // Parse the server response
+         setVideoPath(data.file);
+         setVideoName(name);
+         setIsImageOpen(false);
+         setIsAudioOpen(false);
+         setIsVideoNameOpen(false);
+         setIsVideoPlayerOpen(true);
+    } catch (error) {
+         console.error('Error:', error);
+    }
+  }
+  // const handleConfirm = async (event) => {
+  //   if (selected_audio.length === 0) {
+  //       console.log("The list is empty!");
+  //       setErrorMessage("Please choose audio for the video and then click confirm");
+  //       return;
+  //   }
+  //   console.log("handleConfirm event=" + event.target.id);
   //   let request = {
-  //     "video_name": "australia_trip",
+  //     "video_name": videoName,
   //     "image_path": image_path,
-  //     "audio_files": list
+  //     "audio_files": selected_audio
   //   };
   //   console.log("handleAudioConfirm::request=" + JSON.stringify(request));
   //   try {
@@ -41,35 +112,21 @@ function VideoMaker({isOpen,base_url,image_path}){
   //        }
 
   //        const data = await response.json(); // Parse the server response
-  //        setVideoFile(data.file);
-  //        setIsAudioOpen(false);
-  //        setIsVideoOpen(true);
-  //        console.log('handleAudioConfirm::Success:', data);
-  //        console.log('handleAudioConfirm::isAudioOpen:', isAudioOpen);
+  //        onComplete(data); 
   //   } catch (error) {
   //        console.error('Error:', error);
   //   }
-  // };
-  const handleAudioConfirm = (data) => {
-    setVideoFile(data.file);
-    setIsAudioOpen(false);
-    setIsVideoOpen(true);
-    console.log('handleAudioConfirm::isAudioOpen:', isAudioOpen);
-    console.log('handleAudioConfirm::isVideoOpen:', isVideoOpen);
-  }
+  // }
 
-  const onTestClick = (event) => {
-    setIsAudioOpen(!isAudioOpen);
-    setIsVideoOpen(!isVideoOpen);
-  }
-  console.log("component::VideoMaker::base_url=" + base_url);
   return (
       <div className={styles.video_maker_container}>
         {/* <button onClick={onTestClick}>Test</button> */}
         {/* <AudioProfile isOpen={isVideoOpen} base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/> */}
         {/* <AudioTree isOpen={isAudioOpen} base_url={base_url} onComplete={handleAudioConfirm} /> */}
-         {isAudioOpen && <AudioProfile base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/>}
-         {isVideoOpen && <VideoTree data={videoFile} base_url={base_url}/>}
+         {isImageOpen && <DragAndDropProfile base_url={base_url} image_path={image_path} onComplete={handleDragAndDrop}/>}
+         {isAudioOpen && <AudioSelector base_url={base_url} onComplete={handleAudioConfirm}/>}
+         {isVideoNameOpen && <VideoNameSelector onComplete={handleVideoName}/>}
+         {isVideoPlayerOpen && <VideoTree data={videoPath} base_url={base_url}/>}
       </div>
   );
 }
