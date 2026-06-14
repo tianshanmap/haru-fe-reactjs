@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react"
+import { useState,useEffect,useCallback } from "react"
 import ConfirmationDialog from "../ConfirmationDialog";
 import MoveCopyDialog from "../MoveCopyDialog";
 import UploadDialog from "../UploadDialog";
@@ -54,10 +54,11 @@ function ExplorerSection(){
       handleNavigate(name);
     };    
 
-    const handleView = (event) => {
-      event.preventDefault(); // Stops the page from reloading
+    const handleView = async (event) => {
+      console.log("handleView::start::flow=" + flow);
       var filename = event.target.getAttribute("name");
       var parentname = event.target.getAttribute("parent");
+      setKey(filename);
       console.log("handleView::filename=" + filename);
       console.log("handleView::parentname=" + parentname);
       setCurrent(filename);
@@ -75,6 +76,7 @@ function ExplorerSection(){
       const encodedURL = base_url + "view?name=" + filename_encoded;
       console.log("handleView::encodedURL=" + encodedURL);
       setUrl(encodedURL);        
+      console.log("handleView::end::flow=" + flow);
     };
  
     const handleDownload = async (event) => {
@@ -250,7 +252,7 @@ function ExplorerSection(){
       // 2. Invoke the function immediately
       fetchData();
     }, []); 
-        
+    
     if (flow == "video"){
       console.log("processing video...")
       return (
