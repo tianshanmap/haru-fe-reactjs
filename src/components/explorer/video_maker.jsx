@@ -7,10 +7,11 @@ import ImageProfile from "./image_profile";
 import DragAndDropProfile from "./DragAndDrop_profile";
 import VideoNameSelector from "./video_name_selector";
 
-function VideoMaker({isOpen,base_url,image_path}){
+function VideoMaker({base_url,image_path,onExit}){
   console.log("VideoMaker,start");
   const [imageList,setImageList] = useState([]);
   const [audioName,setAudioName] = useState("");
+  const [videoData,setVideoData] = useState({});
   const [videoName,setVideoName] = useState("");
   const [videoPath,setVideoPath] = useState("");
   const [isImageOpen,setIsImageOpen] = useState(false);
@@ -26,9 +27,6 @@ function VideoMaker({isOpen,base_url,image_path}){
     setIsVideoNameOpen(false);
   }, []); // Empty dependency array means this runs on mount
 
-  if(!isOpen){
-    return null;
-  }
   const handleDragAndDrop = (data) => {
     setImageList(data);
     setIsImageOpen(false);
@@ -45,18 +43,23 @@ function VideoMaker({isOpen,base_url,image_path}){
     setIsVideoPlayerOpen(false);
   }
 
-  const handleVideoName = async (name) => {
+  const handleVideoName = async (data) => {
     if (imageList.length === 0) {
         console.log("The list is empty!");
         setErrorMessage("Please choose audio for the video and then click confirm");
         return;
     }
-    setVideoName(name);
+    setVideoData(data);
     let request = {
       "audio_name": audioName,
-      "video_name": name,
+      "video_name": data.videoName,
       "image_path": image_path,
-      "image_files": imageList
+      "image_files": imageList,
+      "fps": data.fps,
+      "width": data.width,
+      "height": data.height,
+      "scale": data.scale,
+      "codec": data.codec
     };
     console.log("handleAudioConfirm::request=" + JSON.stringify(request));
     try {
@@ -123,10 +126,34 @@ function VideoMaker({isOpen,base_url,image_path}){
         {/* <button onClick={onTestClick}>Test</button> */}
         {/* <AudioProfile isOpen={isVideoOpen} base_url={base_url} image_path={image_path} onComplete={handleAudioConfirm}/> */}
         {/* <AudioTree isOpen={isAudioOpen} base_url={base_url} onComplete={handleAudioConfirm} /> */}
-         {isImageOpen && <DragAndDropProfile base_url={base_url} image_path={image_path} onComplete={handleDragAndDrop}/>}
-         {isAudioOpen && <AudioSelector base_url={base_url} onComplete={handleAudioConfirm}/>}
-         {isVideoNameOpen && <VideoNameSelector onComplete={handleVideoName}/>}
-         {isVideoPlayerOpen && <VideoTree data={videoPath} base_url={base_url}/>}
+         {isImageOpen && 
+          <DragAndDropProfile 
+            base_url={base_url} 
+            image_path={image_path} 
+            onComplete={handleDragAndDrop}
+            onExit={onExit}
+          />
+          }
+         {isAudioOpen && 
+          <AudioSelector 
+            base_url={base_url} 
+            onComplete={handleAudioConfirm}
+            onExit={onExit}
+          />
+          }
+         {isVideoNameOpen && 
+          <VideoNameSelector 
+            onComplete={handleVideoName}
+            onExit={onExit}
+          />
+          }
+         {isVideoPlayerOpen && 
+          <VideoTree 
+            data={videoPath} 
+            base_url={base_url}
+            onExit={onExit}
+            />
+          }
       </div>
   );
 }

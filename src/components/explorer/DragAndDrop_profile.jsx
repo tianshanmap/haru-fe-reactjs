@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react"
 import styles from "./DragAndDrop_profile.module.css"
-export default function DragAndDropProfile({base_url,image_path,onComplete}) {
+export default function DragAndDropProfile({base_url,image_path,onComplete,onExit}) {
   const [items, setItems] = useState([])
 
   useEffect(() => {
@@ -64,9 +64,18 @@ export default function DragAndDropProfile({base_url,image_path,onComplete}) {
     console.log(list);
     onComplete(list);
   };
+  const handleSelectAll = (event) => {
+    let list = items.map(x => x.id);
+    console.log(list);
+    onComplete(list);
+  };
   return (
     <div className={styles.drag_drop_top_container}>
-      <button className={styles.drag_drop_button} onClick={onContinue}>Continue...</button> 
+      <div className={styles.drag_drop_command}>
+        <button className={styles.drag_drop_button} onClick={onContinue}>Continue...</button> 
+        <button className={styles.drag_drop_button} onClick={handleSelectAll}>Select All</button> 
+        <button className={styles.drag_drop_button} onClick={onExit}>Cancel</button> 
+      </div>
       <div className={styles.drag_drop_container}>
         {/* Column 1 */}
         <div

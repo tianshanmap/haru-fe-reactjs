@@ -20,6 +20,9 @@
   display: flex;
   flex-direction: column;
 }
+.div_audio_command {
+  display:flex;
+}
 .div_audio_container {
   flex: 1;
   background-color: rgb(227, 217, 217);

@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;       /* Allows items to move to a new line when out of space */
 }
-
+.drag_drop_command {
+  display: flex;
+  
+}
 .drag_drop_button {
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;

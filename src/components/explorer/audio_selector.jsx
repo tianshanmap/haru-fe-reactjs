@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from "./audio_selector.module.css";
 
-const AudioSelector = ({base_url,onComplete}) => {
+const AudioSelector = ({base_url,onComplete,onExit}) => {
   const [data, setData] = useState({files:[]});
   const [errorMessage, setErrorMessage] = useState("");
   console.log("AudioSelector::about to run useEffect," + base_url);
@@ -70,8 +70,10 @@ const AudioSelector = ({base_url,onComplete}) => {
 
   return (
         <div className={styles.audio_profile_container}>
-
-          <button onClick={handleContinue}>Continue</button>
+          <div className={styles.div_audio_command}>
+            <button onClick={handleContinue}>Continue</button>
+            <button onClick={onExit}>Cancel</button> 
+          </div>  
           <div className={styles.div_audio_container}>
             <p>{errorMessage}</p>
             <table className={styles.audio_table}>
