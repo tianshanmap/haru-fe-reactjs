@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useCallback } from 'react';
 import styles from "./audio_selector.module.css";
 
 const AudioSelector = ({base_url,onComplete,onExit}) => {
+  const [tick, setTick] = useState(0);
+  const forceUpdate = useCallback(() => setTick(tick => tick + 1), []);
+  // let selected_audio = [];
   const [data, setData] = useState({files:[]});
+  const [selected_audio_map, setSelectedAudioMap] = useState(new Map());
   const [errorMessage, setErrorMessage] = useState("");
   console.log("AudioSelector::about to run useEffect," + base_url);
 
@@ -23,26 +27,77 @@ const AudioSelector = ({base_url,onComplete,onExit}) => {
     fetchData();
   }, []); // Empty dependency array ensures this runs only once on mount
 
-  let selected_audio = [];
+  const createAudio = (container,audio,audio_name) => {
+    // 2. Create the audio element
+    const scanTag = document.createElement('div');
+    const label = document.createElement('label');
+
+    // 2. Set the text content
+    label.textContent = audio_name;
+
+    // 4. Append it to the DOM
+    scanTag.appendChild(label);
+    const audioElement = document.createElement('audio');
+
+    // 3. Configure the audio source and controls
+    audioElement.src = base_url + "view?name=" + audio;
+    audioElement.controls = true; // Displays play, pause, and volume controls
+
+    // 4. Append the audio element inside the div
+    scanTag.appendChild(audioElement);
+    container.appendChild(scanTag);
+  }
+  const handleClear = (event) => {
+    const select_container = document.getElementById("selected_audio");
+    select_container.replaceChildren();
+    setSelectedAudioMap(new Map());
+    forceUpdate();
+  }
   const handleCheckboxChange = (event) => {
     console.log("handleCheckboxChange event=" + event.target.id);
     if (event.target.checked){
-      selected_audio.push(event.target.id)
-      console.log("handleCheckboxChange total-audio=" + selected_audio);
+      selected_audio_map.set(event.target.id,event.target.name);
     } else {
-      let _audio = selected_audio.filter(x => x != event.target.id);
-      selected_audio.length = 0;
-      selected_audio.push(..._audio);      
-      console.log("handleCheckboxChange total-audio=" + selected_audio);
+      selected_audio_map.delete(event.target.id);
     }    
+    const select_container = document.getElementById("selected_audio");
+    select_container.replaceChildren();
+    // const selected_audio = [...selected_audio_map];
+    // for (const audio of selected_audio) {
+    //   createAudio(select_container,audio,name);    
+    // }
+    for (const [key, value] of selected_audio_map) {
+      console.log(`${key}: ${value}`);
+      createAudio(select_container,key,value);    
+    }
   }
+  // const handleCheckboxChange1 = (event) => {
+  //   console.log("handleCheckboxChange event=" + event.target.id);
+  //   if (event.target.checked){
+  //     selected_audio.push(event.target.id)
+  //     console.log("handleCheckboxChange total-audio=" + selected_audio);
+  //   } else {
+  //     let _audio = selected_audio.filter(x => x != event.target.id);
+  //     selected_audio.length = 0;
+  //     selected_audio.push(..._audio);      
+  //     console.log("handleCheckboxChange total-audio=" + selected_audio);
+  //   }    
+  //   const select_container = document.getElementById("selected_audio");
+  //   select_container.replaceChildren();
+  //   for (const audio of selected_audio) {
+  //     createAudio(select_container,audio);    
+  //   }
+  // }
 
   const handleContinue = async (event) => {
+    console.log("handleContinue...");
+    const selected_audio = [...selected_audio_map.keys()]; 
     if (selected_audio.length === 0) {
         console.log("The list is empty!");
         setErrorMessage("Please choose audio for the video and then click confirm");
         return;
     }
+    console.log("handleContinue...selected_audio=" + selected_audio);
     let request = {
       "audio_files": selected_audio
     };
@@ -69,48 +124,62 @@ const AudioSelector = ({base_url,onComplete,onExit}) => {
   }  
 
   return (
-        <div className={styles.audio_profile_container}>
-          <div className={styles.div_audio_command}>
-            <button onClick={handleContinue}>Continue</button>
-            <button onClick={onExit}>Cancel</button> 
-          </div>  
-          <div className={styles.div_audio_container}>
-            <p>{errorMessage}</p>
-            <table className={styles.audio_table}>
-            <thead>
-                <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {/* 2. Use .map() to loop through the array and return table rows */}
-                {data.files.map((item) => (
-                <tr>
-                    <td>{item.name}</td>
-                    <td>
-                    <audio src={base_url + "view?name=" + item.path} controls>
-                        Your browser does not support the audio element.
-                    </audio>
-                    </td>
-                    <td>
-                    <input
-                        id={item.path}
-                        type="checkbox"
-                        onChange={handleCheckboxChange}
-                    />
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
+        <div className={styles.audio_profile_container} key={tick}>
+          <div className={styles.div_audio_selector}>
+            <div className={styles.div_audio_selector_source}>
+              <p>{errorMessage}</p>
+              <table className={styles.audio_table}>
+              <thead>
+                  <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {/* 2. Use .map() to loop through the array and return table rows */}
+                  {data.files.map((item) => (
+                  <tr>
+                      <td>{item.name}</td>
+                      <td>
+                      <audio src={base_url + "view?name=" + item.path} controls>
+                          Your browser does not support the audio element.
+                      </audio>
+                      </td>
+                      <td>
+                      {selected_audio_map.has(item.path) &&
+                        <input
+                            id={item.path}
+                            name={item.name}
+                            type="checkbox"
+                            checked
+                            onChange={handleCheckboxChange}
+                        />
+                      }  
+                      {!selected_audio_map.has(item.path) &&
+                        <input
+                            id={item.path}
+                            name={item.name}
+                            type="checkbox"
+                            onChange={handleCheckboxChange}
+                        />
+                      }  
+                      </td>
+                  </tr>
+                  ))}
+              </tbody>
+              </table>
+            </div>
+            <div className={styles.div_audio_selector_target}>
+              <div className={styles.div_audio_selector_target_cmd}>
+                <button onClick={handleContinue}>Next</button>
+                <button onClick={handleClear}>Clear</button>
+                <button onClick={onExit}>Cancel</button> 
+              </div>
+              <div id="selected_audio" className={styles.div_audio_selector_target_list}>
+              </div>
+            </div>
           </div>
-          {/* <div className={styles.div_command_container}>
-            <label>Video Name:</label>
-            <input type="text" name="video_name" value={videoName} onChange={onVideoNameChange}/>
-            <button onClick={handleConfirm}>Confirm</button>
-          </div> */}
         </div>
     );
 };

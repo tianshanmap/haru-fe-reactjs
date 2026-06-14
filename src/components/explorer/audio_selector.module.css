@@ -42,3 +42,46 @@
   border-style:solid;
   padding: 10px;
 }
+
+.div_audio_selector {
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(227, 217, 217);
+  border-color:rgb(0, 128, 255);;
+  border-style:solid;
+  gap:50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.div_audio_selector_source {
+  flex:1; 
+  padding:20px; 
+}
+.div_audio_selector_target {
+  display: flex;
+  flex-direction: column;
+  flex:1;  
+  padding: 20px;
+  background-color: rgb(186, 182, 182);
+  border-style: solid;
+  border-width: 1px;
+  gap:10px
+}
+.div_audio_selector_target_list {
+  display: flex;
+  flex-direction: column;
+  flex:1;  
+  padding: 20px;
+  background-color: rgb(186, 182, 182);
+  border-style: solid;
+  border-width: 1px;
+  gap:10px
+}
+.div_audio_selector_target_list div {
+  display: flex;
+  flex-direction: column;
+}
+.div_audio_selector_target_cmd {
+  display: flex;
+  flex-direction: row;
+}
