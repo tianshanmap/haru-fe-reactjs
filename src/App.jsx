@@ -3,6 +3,7 @@ import Header from './components/header.jsx'
 import Footer from './components/footer.jsx'
 import MainSection from './components/opencv/mainSection.jsx'
 import ExplorerSection from './components/explorer/explorer.jsx'
+import VideoCreator from './components/video/video_creator_main.jsx'
 import CanvasContainer from './components/common/CanvasContainer.jsx'
 import DragAndDrop from './components/common/DragAndDrop.jsx'
 import { BrowserRouter as Router, Routes, Route,useNavigate } from 'react-router-dom';
@@ -62,6 +63,15 @@ const DragAndDropHome = () => {
     </div>
   )
 }
+const VideoCreatorHome = () => {
+  return (
+    <div className='container'>
+        <Header/>
+        <VideoCreator base_url="http://localhost:8080/filesystem/" />
+        <Footer/>
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -73,6 +83,7 @@ function App() {
         <Route path="/canvas" element={<ConvasHome/>} />
         <Route path="/about" element={<About/>} />
         <Route path="/draganddrop" element={<DragAndDropHome/>} />
+        <Route path="/videoman" element={<VideoCreatorHome/>} />
       </Routes>
     </Router>
   )

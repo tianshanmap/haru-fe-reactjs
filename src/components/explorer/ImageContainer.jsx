@@ -127,26 +127,6 @@ const ImageContainer = ({ name,parentName,list,base_url,onExitAction }) => {
                 />
               </div>
           }          
-            {/* <div className={styles.div_image_cmd_container}>
-                <button className={styles.action_btn} onClick={handlePrev}>Prev</button>
-                <button className={styles.action_btn} onClick={handleNext}>Next</button>
-                <button className={styles.action_btn} onClick={handleScaleUp}>+</button>
-                <button className={styles.action_btn} onClick={handleScaleDown}>-</button>
-                <button className={styles.action_btn} onClick={handleDelete}>Trash</button>
-                <button className={styles.action_btn} onClick={handleVideoMaker}>Video</button>
-                <button className={styles.action_btn} onClick={handleBack}>Back</button>
-            </div>
-            <div className={styles.div_image_container}>
-              <div className={styles.div_image_container_image}>
-                <ImageBlock id="img_container"
-                  isOpen={isImageOpen}
-                  url={remoteUrl}
-                />  
-              </div>
-              <div className={styles.div_image_container_audio}>
-                <VideoMaker isOpen={isVideoMakerOpen} base_url={base_url} image_path={parentName}/>
-              </div>
-            </div> */}
         </div>
     </div>  
   );
