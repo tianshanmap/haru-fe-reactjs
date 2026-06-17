@@ -1,24 +1,16 @@
 import { useState,useEffect } from "react"
-import styles from "./DragAndDrop_profile.module.css"
-export default function DragAndDropProfile({base_url,image_path,onComplete,onExit}) {
+import styles from "./DragAndDrop_profile_list.module.css"
+export default function DragAndDropProfileList({base_url,list,onComplete,onExit}) {
   const [items, setItems] = useState([])
 
   useEffect(() => {
     // 1. Declare the async function inside the effect
     const fetchData = async () => {
       try {
-        const response = await fetch(base_url + 'folder?name=' + image_path);
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        
-        const result = await response.json();
-
         // 1. Split the string into an array
         // 2. Use .map() to return an object for each item
-        const fruitObjects = result.files.filter(x => !x.name.startsWith(".") && (x.name.endsWith(".jpeg") || x.name.endsWith(".jpg"))).map(x => {
-            return { id: x.path, text: x.name, column: 'left' };
+        const fruitObjects = list.map(x => {
+            return { id: x, text: x, column: 'left' };
         });
         setItems(fruitObjects);
         console.log(JSON.stringify(fruitObjects));        

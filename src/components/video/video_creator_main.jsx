@@ -55,7 +55,8 @@ const VideoCreatorMain = ({ base_url }) => {
     // const data = await callRemote("http://localhost:8081/filesystem/unzip?filename=" + filename + "&target=" + targetUploadPath);
     setName(data.name);
     setList(data.files);
-
+    setParentName(data.targetPath);
+    console.log("handleFileUpload------ topPath=" +data.targetPath);
     setIsImageOpen(true);   
   }
 
