@@ -42,7 +42,15 @@ export default function ChunkedUploader({title,name,base_url,onComplete,accept_t
       setProgress(Math.round(((chunkIndex + 1) / totalChunks) * 100));
     }
     setIsUploading(false);
-    onComplete(fileId);
+    try {
+        const response = await fetch(base_url + "unzip?filename=" + fileId + "&target=" + name);
+        const data = await response.json();
+        console.log("data.files=" + JSON.stringify(data));
+        onComplete(data);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+
   };
 
   return (
