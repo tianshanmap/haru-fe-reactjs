@@ -58,7 +58,6 @@ function ExplorerSection(){
       console.log("handleView::start::flow=" + flow);
       var filename = event.target.getAttribute("name");
       var parentname = event.target.getAttribute("parent");
-      setKey(filename);
       console.log("handleView::filename=" + filename);
       console.log("handleView::parentname=" + parentname);
       setCurrent(filename);

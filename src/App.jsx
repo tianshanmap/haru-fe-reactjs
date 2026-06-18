@@ -22,7 +22,7 @@ const FileExplorer = () => {
   return (
     <div className='container'>
         <Header/>
-        <ExplorerSection/>
+        <ExplorerSection base_url="http://tianshan.ca:8080/filesystem/"/>
         <Footer/>
     </div>
   )
@@ -58,7 +58,7 @@ const DragAndDropHome = () => {
   return (
     <div className='container'>
         <Header/>
-        <DragAndDrop base_url="http://localhost:8080/filesystem/" name="/Users/developer/T9/travels/processed/174-alison/jpeg" />
+        <DragAndDrop base_url="http://tianshan:8080/filesystem/" name="/Users/developer/T9/travels/processed/174-alison/jpeg" />
         <Footer/>
     </div>
   )
@@ -67,7 +67,7 @@ const VideoCreatorHome = () => {
   return (
     <div className='container'>
         <Header/>
-        <VideoCreator base_url="http://localhost:8080/filesystem/" />
+        <VideoCreator base_url="http://tianshan.ca:8080/filesystem/" />
         <Footer/>
     </div>
   )

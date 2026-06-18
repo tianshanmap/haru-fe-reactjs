@@ -75,7 +75,7 @@ const VideoCreatorMain = ({ base_url }) => {
                 <ChunkedUploader 
                   title="Upload compressed photoes for making video"
                   name={targetUploadPath}
-                  base_url="http://localhost:8081/filesystem/"
+                  base_url="http://tianshan.ca:8081/goweb/filesystem/"
                   accept_type=".gz,.zip"
                   onComplete={handleFileUpload}
                 />  
