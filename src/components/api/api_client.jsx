@@ -48,6 +48,7 @@ export const useApiClient = () => {
     error,
     // Users Endpoints
     getDirectory: (name) => request(API_BASE_URL_8080 + '/filesystem/folder?name=' + name),
+    getDownloadURL: (name) => request(API_BASE_URL_8081 + '/goweb/filesystem/download?name=' + name),
     getFile: (name) => request(API_BASE_URL_8080 + '/filesystem/view?name=' + name),
     deleteFile: (name) => request(API_BASE_URL_8080 + '/filesystem/delete?name=' + name),
     getUserById: (id) => request(`/users/${id}`),

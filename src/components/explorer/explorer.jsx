@@ -6,14 +6,18 @@ import DownloadDialog from "../DownloadDialog";
 import CreateDialog from "../CreateDialog";
 import ExplorerTree from "./explorer_tree"
 import ImageContainer from "./ImageContainer";
+import { getDirectory,getRoot,copy,move,deleteFile, createDirectory,getUpload} from "../api/api_service_8080";
+import { getDownload } from "../api/api_service_8081";
 
 function ExplorerSection(){
+
     const base_url = "http://localhost:8080/filesystem/"
     const [current, setCurrent] = useState('/');
     const [parent, setParent] = useState('/');
     const [url, setUrl] = useState(base_url + "folder?name=/");
     const [data, setData] = useState({});
     const [list, setList] = useState([]);
+    const [imageList, setImageList] = useState([]);
     const [error, setError] = useState("");
     const [flow, setFlow] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,27 +29,28 @@ function ExplorerSection(){
     const [message, setMessage] = useState("");
     const [targetMoveCopyPath, setTargetMoveCopyPath] = useState("");
 
-    const callRemote = async (remote_url) => {
-      try {
-        console.log("handleSelection-calling remote_url=" + remote_url);
-        const response = await fetch(remote_url);
-        const data = await response.json();
-        console.log("data.files=" + JSON.stringify(data));
-        return data;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
-      }
-    }  
-    
+    useEffect(() => {
+      // 1. Declare the inner async function
+      const fetchData = async () => {
+        try {
+          const result = await getRoot("/");
+          setData(result);
+          setList(result.files);
+          console.log(result.files);
+        } catch (err) {
+          setError(err.message);
+          console.log(err.message);
+        }
+      };
+      // 2. Invoke the function immediately
+      fetchData();
+    }, []); 
+
     const handleNavigate = async (name) => {
-      console.log("handleNavigate");
+      console.log("handleNavigate-name=" + name);
       setFlow("");
       setCurrent(name);
-      var remote_url = base_url + "folder?name=" + name;        
-      const data = await callRemote(remote_url);
-      console.log("handleSelection,data=" + data);
-      console.log("handleSelection,data=" + JSON.stringify(data));
+      const data = await getDirectory(name);
       setData(data);
       setList(data.files);
     };    
@@ -54,7 +59,7 @@ function ExplorerSection(){
       handleNavigate(name);
     };    
 
-    const handleView = async (event) => {
+    const handleView = (event) => {
       console.log("handleView::start::flow=" + flow);
       var filename = event.target.getAttribute("name");
       var parentname = event.target.getAttribute("parent");
@@ -67,6 +72,7 @@ function ExplorerSection(){
       } else if (filename.endsWith(".mp3") || filename.endsWith(".wav")){
         setFlow("audio");
       } else if (current.endsWith(".jpeg") || current.endsWith(".jpg") || current.endsWith(".png")){
+        setImageList(list.filter(x => x.path.endsWith(".jpg") || x.path.endsWith(".jpeg") || x.path.endsWith(".png")).map(x => x.path));
         setFlow("image");
       } else if (filename.endsWith(".pdf")){
         setFlow("pdf");
@@ -82,14 +88,11 @@ function ExplorerSection(){
         setIsDownloadDialogOpen(true);
         setCurrent(event.target.getAttribute("name"));
         const parentname = event.target.getAttribute("parent");
-        const target_url = base_url + "download?name=" + event.target.getAttribute("name") + "&parent=" + parentname; 
+        const target_url = getDownload(event.target.getAttribute("name")); 
         setUrl(target_url);        
         setMessage("Are you sure to download " + event.target.getAttribute("name") + "?");
         // setFlow("")
         setParent(parentname);
-        // const data = await callRemote(target_url)
-        // setData(data);
-        // setList(data.files);
     }
     function handleCopy(event){
         setIsCopyDialogOpen(true);
@@ -99,7 +102,6 @@ function ExplorerSection(){
         setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
         // setFlow("delete")
         setParent(parentname);
-        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
     }
     function handleUpload(event){
         console.log("handleUpload is called");
@@ -107,11 +109,10 @@ function ExplorerSection(){
         setMessage("Are you sure to upload to folder " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "upload");        
+        setUrl(getUpload());        
         // setFlow("delete")
         setParent(parentname);
         console.log("handleUpload is completed.");
-        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
     }
     function handleMove(event){
         setIsMoveDialogOpen(true);
@@ -121,7 +122,6 @@ function ExplorerSection(){
         setUrl(base_url + "move?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
         // setFlow("delete")
         setParent(parentname);
-        // callRemote(base_url + "move?name=" + event.target.getAttribute("name") + "&target=" + )
     }
     function handleNew(event){
         setIsCreateDialogOpen(true);
@@ -131,7 +131,6 @@ function ExplorerSection(){
         setUrl(base_url + "create?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
         // setFlow("delete")
         setParent(parentname);
-        // callRemote(base_url + "move?name=" + event.target.getAttribute("name") + "&target=" + )
     }
     function handleDelete(event){
         setIsDialogOpen(true);
@@ -141,21 +140,18 @@ function ExplorerSection(){
         setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
         // setFlow("delete")
         setParent(parentname);
-        // callRemote(base_url + "delete?name=" + event.target.getAttribute("name"))
     }
-    const handleDialogConfirm = async () => {
+    const handleDeleteDialogConfirm = async () => {
       setIsDialogOpen(false);
       console.log("Action Confirmed! Perform delete logic here.");
-      const data = await callRemote(url);
+      const data = await deleteFile(current,parent);
       setData(data);
       setList(data.files);
     };
     const handleMoveDialogConfirm = async () => {
       setIsMoveDialogOpen(false);
       console.log("handleMoveDialogConfirm::Action Confirmed! Perform move logic here.");
-      let moveUrl = base_url + "move?name=" + current + "&parent=" + targetMoveCopyPath;
-      console.log("handleMoveDialogConfirm::moveUrl=" + moveUrl);
-      const data = await callRemote(moveUrl);
+      const data = await move(current,targetMoveCopyPath);
       setData(data);
       setList(data.files);
       setFlow("");
@@ -163,17 +159,14 @@ function ExplorerSection(){
     const handleCopyDialogConfirm = async () => {
       setIsCopyDialogOpen(false);
       console.log("Action Confirmed! Perform copy logic here.");
-      let copyUrl = base_url + "copy?name=" + current + "&parent=" + targetMoveCopyPath;
-      console.log("handleCopyDialogConfirm::copyUrl=" + copyUrl);
-      const data = await callRemote(copyUrl);
+      const data = await copy(current,targetMoveCopyPath);
       setData(data);
       setList(data.files);
       setFlow("");
     };
     const handleUploadDialogConfirm = async () => {
       setIsUploadDialogOpen(false);
-      let copyUrl = base_url + "folder?name=" + current;
-      const data = await callRemote(copyUrl);
+      const data = await getDirectory(current);
       setData(data);
       setList(data.files);
       setFlow("");
@@ -181,8 +174,7 @@ function ExplorerSection(){
     const handleCreateDialogConfirm = async (name) => {
       setIsCreateDialogOpen(false);
       console.log("Action Confirmed! Perform copy logic here.");
-      let createUrl = base_url + "create?name=" + name + "&parent=" + current;
-      const data = await callRemote(createUrl);
+      const data = await createDirectory(name,current);
       setData(data);
       setList(data.files);
       setFlow("");
@@ -216,12 +208,7 @@ function ExplorerSection(){
     const handlePathSelect = async (path) => {
       console.log("handlePathSelect::" + path);
       setTargetMoveCopyPath(path);
-      const data = await callRemote(base_url + "folder?name=" + path);
-      // let myOptions = [
-      //   { value: '/home', label: '/home' },
-      //   { value: '/users', label: '/users' },
-      //   { value: '/tmp', label: '/tmp' }
-      // ];
+      const data = await getDirectory(path);
       const myOptions = data.files
         .filter(item => item.kind === "folder")
         .map(item => ({value: item.path, label: item.path}));      
@@ -230,27 +217,6 @@ function ExplorerSection(){
       console.log("handlePathSelect::myOptions=" + JSON.stringify(myOptions));  
       return myOptions;
      };
-
-    useEffect(() => {
-      // 1. Declare the inner async function
-      const fetchData = async () => {
-        try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const result = await response.json();
-          setData(result);
-          setList(result.files);
-          console.log(result.files);
-        } catch (err) {
-          setError(err.message);
-          console.log(err.message);
-        }
-      };
-      // 2. Invoke the function immediately
-      fetchData();
-    }, []); 
     
     if (flow == "video"){
       console.log("processing video...")
@@ -283,23 +249,17 @@ function ExplorerSection(){
             isOpen={isDialogOpen} 
             title="Delete a File/Folder" 
             message={message}
-            onConfirm={handleDialogConfirm}
+            onConfirm={handleDeleteDialogConfirm}
             onCancel={handleDialogCancel}/>
         </div>  
       )
     } else if (flow == "image"){
       console.log("processing image...");
-      console.log("processing image...parent=" + JSON.stringify(parent));
-      let image_list = list.filter(x => x.path.endsWith(".jpg") || x.path.endsWith(".jpeg") || x.path.endsWith(".png")).map(x => x.path);
       return (
-        // <div className="main">
-        //   <a href="#" name={parent} onClick={handleSelection}>Back</a>
-        //   <img src={url} width="50%" height="50%"></img>
-        // </div>  
         <ImageContainer 
           name={current}
           parentName={parent}
-          list={image_list}
+          list={imageList}
           base_url={base_url}
           onExitAction={handleNavigate}
           />
@@ -334,7 +294,7 @@ function ExplorerSection(){
               isOpen={isDialogOpen} 
               title="Delete a File/Folder" 
               message={message}
-              onConfirm={handleDialogConfirm}
+              onConfirm={handleDeleteDialogConfirm}
               onCancel={handleDialogCancel}/>
             <MoveCopyDialog 
               isOpen={isMoveDialogOpen} 

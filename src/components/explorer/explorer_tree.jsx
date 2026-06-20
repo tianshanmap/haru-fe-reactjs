@@ -1,10 +1,13 @@
+import styles from "./explorer_tree.module.css"
+
 function ExplorerTree({data,list,handleSelection,handleDownload,handleUpload,handleCopy,handleMove,handleDelete,handleView,handleNew}){
+
   const handleClickView = (event) => {
     handleView(event);  
   }  
 
   return (
-    <table border="0" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
+    <table className="explorer_table">
       <thead>
         <tr>
           <th></th>
@@ -14,13 +17,13 @@ function ExplorerTree({data,list,handleSelection,handleDownload,handleUpload,han
       <tbody>
         <tr>
           <td>
-            <div className="table-td-box">Current Directory : {data.parent + "/" + data.name}</div>
+            <div className={styles.table_td_box}>Current Directory : {data.parent + "/" + data.name}</div>
           </td>
           <td></td>
         </tr>
         <tr>
           <td>
-            <div className="table-td-box">Parent Directory : <a href="#" name={data.parent} onClick={handleSelection}>{data.parent}</a></div>
+            <div className={styles.table_td_box}>Parent Directory : <a href="#" name={data.parent} onClick={handleSelection}>{data.parent}</a></div>
           </td>
           <td></td>
         </tr>
