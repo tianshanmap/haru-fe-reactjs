@@ -1,21 +1,23 @@
 import { useState, useEffect,useCallback } from 'react';
 import styles from "./audio_selector.module.css";
+import {
+  getAudioList,
+  getViewEndPoint,
+} from "../api/api_service_8080";
 
-const AudioSelector = ({base_url,onComplete,onExit}) => {
+const AudioSelector = ({onComplete,onExit}) => {
   const [tick, setTick] = useState(0);
   const forceUpdate = useCallback(() => setTick(tick => tick + 1), []);
   // let selected_audio = [];
   const [data, setData] = useState({files:[]});
   const [selected_audio_map, setSelectedAudioMap] = useState(new Map());
   const [errorMessage, setErrorMessage] = useState("");
-  console.log("AudioSelector::about to run useEffect," + base_url);
 
   useEffect(() => {
     // 1. Declare the async function inside the effect
     const fetchData = async () => {
       try {
-        const response = await fetch(base_url + 'video/audio_list');
-        const result = await response.json();
+        const result = await getAudioList();
         setData(result); // 2. Update state to trigger re-render
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -40,7 +42,7 @@ const AudioSelector = ({base_url,onComplete,onExit}) => {
     const audioElement = document.createElement('audio');
 
     // 3. Configure the audio source and controls
-    audioElement.src = base_url + "view?name=" + audio;
+    audioElement.src = getViewEndPoint(audio);
     audioElement.controls = true; // Displays play, pause, and volume controls
 
     // 4. Append the audio element inside the div
@@ -142,7 +144,7 @@ const AudioSelector = ({base_url,onComplete,onExit}) => {
                   <tr>
                       <td>{item.name}</td>
                       <td>
-                      <audio src={base_url + "view?name=" + item.path} controls>
+                      <audio src={getViewEndPoint(item.path)} controls>
                           Your browser does not support the audio element.
                       </audio>
                       </td>

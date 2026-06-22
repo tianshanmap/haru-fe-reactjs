@@ -2,7 +2,6 @@ import { useState } from "react";
 import styles from "./ImageContainer.module.css"
 
 function ImageBlock({name,list,base_url,onComplete,onExit}){
-  console.log("ImageBlock,base_url=" + base_url + ",name=" + name);
   const [currentImage, setCurrentImage] = useState(name);
   const [remoteUrl,setRemoteUrl] = useState(base_url + "view?name=" + name);
   const [imageList,setImageList] = useState(list);

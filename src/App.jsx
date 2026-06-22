@@ -22,7 +22,7 @@ const FileExplorer = () => {
   return (
     <div className='container'>
         <Header/>
-        <ExplorerSection base_url="http://tianshan.ca:8080/filesystem/"/>
+        <ExplorerSection />
         <Footer/>
     </div>
   )
@@ -67,7 +67,7 @@ const VideoCreatorHome = () => {
   return (
     <div className='container'>
         <Header/>
-        <VideoCreator base_url="http://tianshan.ca:8080/filesystem/" />
+        <VideoCreator />
         <Footer/>
     </div>
   )

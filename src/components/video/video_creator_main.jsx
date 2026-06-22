@@ -4,8 +4,11 @@ import ImageBlock from "../common/image_block";
 import VideoMaker from "../common/video_maker"
 import ChunkedUploader from "../common/file_upload_chunk"
 
+import {
+  getVideoUploadPath,
+} from "../api/api_service_8080";
 
-const VideoCreatorMain = ({ base_url }) => {
+const VideoCreatorMain = () => {
   const [targetUploadPath,setTargetUploadPath] = useState("");
   const [isFileUploadOpen,setIsFileUploadOpen] = useState(false);
   const [isVideoMakerOpen,setIsVideoMakerOpen] = useState(false);
@@ -17,8 +20,7 @@ const VideoCreatorMain = ({ base_url }) => {
     // 1. Declare the async function inside the effect
     const init = async () => {
       try {
-        const response = await fetch(base_url + 'upload_target_path');
-        const result = await response.json();
+        const result = await getVideoUploadPath();
         setTargetUploadPath(result.path); // 2. Update state to trigger re-render
         setIsFileUploadOpen(true);
         setIsImageOpen(false);
@@ -75,7 +77,6 @@ const VideoCreatorMain = ({ base_url }) => {
                 <ChunkedUploader 
                   title="Upload compressed photoes for making video"
                   name={targetUploadPath}
-                  base_url="http://tianshan.ca:8081/goweb/filesystem/"
                   accept_type=".gz,.zip"
                   onComplete={handleFileUpload}
                 />  
@@ -86,7 +87,6 @@ const VideoCreatorMain = ({ base_url }) => {
                 <ImageBlock 
                   name={name}
                   list={list}
-                  base_url={base_url}
                   onComplete={handleOpenVideoMaker}
                   onExit={handleExit}
                 />  
@@ -95,7 +95,6 @@ const VideoCreatorMain = ({ base_url }) => {
           {isVideoMakerOpen && 
               <div className={styles.div_image_container_audio}>
                 <VideoMaker 
-                  base_url={base_url} 
                   image_path={parentName}
                   onExit={handleExit}
                 />

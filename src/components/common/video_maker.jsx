@@ -6,8 +6,11 @@ import AudioSelector from "./audio_selector";
 import ImageProfile from "./image_profile";
 import DragAndDropProfile from "./DragAndDrop_profile";
 import VideoNameSelector from "./video_name_selector";
+import {
+  generateVideo
+} from "../api/api_service_8080";
 
-function VideoMaker({base_url,image_path,onExit}){
+function VideoMaker({image_path,onExit}){
   console.log("VideoMaker,start");
   const [imageList,setImageList] = useState([]);
   const [audioName,setAudioName] = useState("");
@@ -63,20 +66,7 @@ function VideoMaker({base_url,image_path,onExit}){
     };
     console.log("handleAudioConfirm::request=" + JSON.stringify(request));
     try {
-         let remote_url = base_url + "video/generate/v1";
-         const response = await fetch(remote_url, {
-           method: 'POST', // Explicitly declare POST method
-           headers: {
-             'Content-Type': 'application/json', // Instruct the server you are sending JSON data
-           },
-           body: JSON.stringify(request), // Serialize JavaScript object to JSON string
-         });
-
-         if (!response.ok) {
-           throw new Error('Network response was not ok');
-         }
-
-         const data = await response.json(); // Parse the server response
+         const data = await generateVideo(request); // Parse the server response
          setVideoPath(data.file);
          setVideoName(name);
          setIsImageOpen(false);
@@ -91,7 +81,6 @@ function VideoMaker({base_url,image_path,onExit}){
       <div className={styles.video_maker_container}>
          {isImageOpen && 
           <DragAndDropProfile 
-            base_url={base_url} 
             image_path={image_path} 
             onComplete={handleDragAndDrop}
             onExit={onExit}
@@ -99,7 +88,6 @@ function VideoMaker({base_url,image_path,onExit}){
           }
          {isAudioOpen && 
           <AudioSelector 
-            base_url={base_url} 
             onComplete={handleAudioConfirm}
             onExit={onExit}
           />
@@ -113,7 +101,6 @@ function VideoMaker({base_url,image_path,onExit}){
          {isVideoPlayerOpen && 
           <VideoTree 
             data={videoPath} 
-            base_url={base_url}
             onExit={onExit}
             />
           }

@@ -1,19 +1,19 @@
 import { useState,useEffect } from "react"
 import styles from "./DragAndDrop_profile.module.css"
-export default function DragAndDropProfile({base_url,image_path,onComplete,onExit}) {
+import {
+  getDirectory,
+  getViewEndPoint
+} from "../api/api_service_8080";
+
+
+export default function DragAndDropProfile({image_path,onComplete,onExit}) {
   const [items, setItems] = useState([])
 
   useEffect(() => {
     // 1. Declare the async function inside the effect
     const fetchData = async () => {
       try {
-        const response = await fetch(base_url + 'folder?name=' + image_path);
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        
-        const result = await response.json();
+        const result = await getDirectory(image_path);
 
         // 1. Split the string into an array
         // 2. Use .map() to return an object for each item
@@ -91,7 +91,7 @@ export default function DragAndDropProfile({base_url,image_path,onComplete,onExi
               onDragStart={(e) => handleDragStart(e, item.id)}
               className={styles.drag_drop_item}
             >
-              <img src={base_url + "view?name=" + item.id} className={styles.drag_and_drop_img} width="100" height="50" />
+              <img src={getViewEndPoint(item.id)} className={styles.drag_and_drop_img} width="100" height="50" />
             </div>
           ))}
         </div>
@@ -109,7 +109,7 @@ export default function DragAndDropProfile({base_url,image_path,onComplete,onExi
               onDragStart={(e) => handleDragStart(e, item.id)}
               className={styles.drag_drop_item}
             >
-              <img src={base_url + "view?name=" + item.id} className={styles.drag_and_drop_img} />
+              <img src={getViewEndPoint(item.id)} className={styles.drag_and_drop_img} />
             </div>
           ))}
         </div>

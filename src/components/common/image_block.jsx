@@ -1,24 +1,15 @@
 import { useState } from "react";
 import styles from "./image_block.module.css"
+import { 
+        getViewEndPoint,
+        deleteFile
+      } from "../api/api_service_8080";
 
-function ImageBlock({name,list,base_url,onComplete,onExit}){
-  console.log("ImageBlock,base_url=" + base_url + ",name=" + name);
+function ImageBlock({name,list,onComplete,onExit}){
   const [currentImage, setCurrentImage] = useState(name);
-  const [remoteUrl,setRemoteUrl] = useState(base_url + "view?name=" + name);
+  const [remoteUrl,setRemoteUrl] = useState(getViewEndPoint(name));
   const [imageList,setImageList] = useState(list);
 
-  const callRemote = async (remote_url) => {
-    try {
-      console.log("handleSelection-calling remote_url=" + remote_url);
-      const response = await fetch(remote_url);
-      const data = await response.json();
-      console.log("data.files=" + JSON.stringify(data));
-      return data;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return null;
-    }
-  }  
   const nextItem = (list, currentItem,pos) => {
     // Find where the current item sits
     const currentIndex = list.indexOf(currentItem);
@@ -42,12 +33,12 @@ function ImageBlock({name,list,base_url,onComplete,onExit}){
   const handlePrev = async (event) => {
     let item = nextItem(imageList,currentImage,-1);
     setCurrentImage(item);
-    setRemoteUrl(base_url + "view?name=" + item);    
+    setRemoteUrl(getViewEndPoint(item));    
   };
   const handleNext = async (event) => {
     let item = nextItem(imageList,currentImage,1);
     setCurrentImage(item);
-    setRemoteUrl(base_url + "view?name=" + item);    
+    setRemoteUrl(getViewEndPoint(item));    
   };
   const handleBack = async (event) => {
     onExit();
@@ -60,11 +51,9 @@ function ImageBlock({name,list,base_url,onComplete,onExit}){
   };
   const handleDelete = async (event) => {
     console.log("handleDelete::called");
-    let data = await callRemote(base_url + "delete?name=" + currentImage);
-    console.log("handleDelete::data=" + data);
+    let data = await deleteFile(currentImage);
     if (data != null){
       handleNext(event);
-      console.log("handleDelete::data.files=" + JSON.stringify(data.files));
       let image_list = data.files.filter(x => x.path.endsWith(".jpg") || x.path.endsWith(".jpeg") || x.path.endsWith(".png")).map(x => x.path);
       setImageList(image_list);
     }

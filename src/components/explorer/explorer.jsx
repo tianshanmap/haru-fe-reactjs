@@ -6,15 +6,23 @@ import DownloadDialog from "../DownloadDialog";
 import CreateDialog from "../CreateDialog";
 import ExplorerTree from "./explorer_tree"
 import ImageContainer from "./ImageContainer";
-import { getDirectory,getRoot,copy,move,deleteFile, createDirectory,getUpload} from "../api/api_service_8080";
-import { getDownload } from "../api/api_service_8081";
+import { 
+        getDirectory,
+        getRoot,
+        copy,move,deleteFile, createDirectory,
+        getUploadEndPoint,
+        getViewEndPoint,
+        getDeleteEndPoint,
+        getMoveEndPoint,
+        getCreateEndPoint,
+      } from "../api/api_service_8080";
+import { getDownloadEndPoint } from "../api/api_service_8081";
 
 function ExplorerSection(){
 
-    const base_url = "http://localhost:8080/filesystem/"
     const [current, setCurrent] = useState('/');
     const [parent, setParent] = useState('/');
-    const [url, setUrl] = useState(base_url + "folder?name=/");
+    const [url, setUrl] = useState("");
     const [data, setData] = useState({});
     const [list, setList] = useState([]);
     const [imageList, setImageList] = useState([]);
@@ -78,9 +86,7 @@ function ExplorerSection(){
         setFlow("pdf");
       }
       const filename_encoded = filename.replace(/\+/g, '%2B').replace(/\&/g, '%26');
-      const encodedURL = base_url + "view?name=" + filename_encoded;
-      console.log("handleView::encodedURL=" + encodedURL);
-      setUrl(encodedURL);        
+      setUrl(getViewEndPoint(filename_encoded));        
       console.log("handleView::end::flow=" + flow);
     };
  
@@ -88,7 +94,7 @@ function ExplorerSection(){
         setIsDownloadDialogOpen(true);
         setCurrent(event.target.getAttribute("name"));
         const parentname = event.target.getAttribute("parent");
-        const target_url = getDownload(event.target.getAttribute("name")); 
+        const target_url = getDownloadEndPoint(event.target.getAttribute("name")); 
         setUrl(target_url);        
         setMessage("Are you sure to download " + event.target.getAttribute("name") + "?");
         // setFlow("")
@@ -99,8 +105,6 @@ function ExplorerSection(){
         setMessage("Are you sure to copy " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
-        // setFlow("delete")
         setParent(parentname);
     }
     function handleUpload(event){
@@ -109,7 +113,7 @@ function ExplorerSection(){
         setMessage("Are you sure to upload to folder " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(getUpload());        
+        setUrl(getUploadEndPoint());        
         // setFlow("delete")
         setParent(parentname);
         console.log("handleUpload is completed.");
@@ -119,7 +123,7 @@ function ExplorerSection(){
         setMessage("Are you sure to move " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "move?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        setUrl(getMoveEndPoint(event.target.getAttribute("name"),parentname));        
         // setFlow("delete")
         setParent(parentname);
     }
@@ -128,7 +132,7 @@ function ExplorerSection(){
         setMessage("Are you sure to create a new folder under " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "create?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        setUrl(getCreateEndPoint(event.target.getAttribute("name"),parentname));        
         // setFlow("delete")
         setParent(parentname);
     }
@@ -137,7 +141,7 @@ function ExplorerSection(){
         setMessage("Are you sure to delete " + event.target.getAttribute("name") + "?");
         setCurrent(event.target.getAttribute("name"));
         var parentname = event.target.getAttribute("parent");
-        setUrl(base_url + "delete?name=" + event.target.getAttribute("name") + "&parent=" + parentname);        
+        setUrl(getDeleteEndPoint(event.target.getAttribute("name"),parentname));        
         // setFlow("delete")
         setParent(parentname);
     }
@@ -260,7 +264,6 @@ function ExplorerSection(){
           name={current}
           parentName={parent}
           list={imageList}
-          base_url={base_url}
           onExitAction={handleNavigate}
           />
       )
