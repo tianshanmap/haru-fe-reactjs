@@ -10,6 +10,7 @@ function Header(){
             <button onClick={() => navigate("/canvas")}>Canvas</button>
             <button onClick={() => navigate("/draganddrop")}>Drag and Drop</button>
             <button onClick={() => navigate("/videoman")}>Video Creator</button>
+            <button onClick={() => navigate("/computerProfile")}>Computer Profile</button>
         </div>
     )
 }

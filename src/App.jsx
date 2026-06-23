@@ -6,6 +6,7 @@ import ExplorerSection from './components/explorer/explorer.jsx'
 import VideoCreator from './components/video/video_creator_main.jsx'
 import CanvasContainer from './components/common/CanvasContainer.jsx'
 import DragAndDrop from './components/common/DragAndDrop.jsx'
+import ComputerProfile from './components/computer/computer_profile.jsx'
 import { BrowserRouter as Router, Routes, Route,useNavigate } from 'react-router-dom';
 
 const MediaCenter = () => {
@@ -72,6 +73,15 @@ const VideoCreatorHome = () => {
     </div>
   )
 }
+const ComputerHome = () => {
+  return (
+    <div className='container'>
+        <Header/>
+        <ComputerProfile />
+        <Footer/>
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -84,6 +94,7 @@ function App() {
         <Route path="/about" element={<About/>} />
         <Route path="/draganddrop" element={<DragAndDropHome/>} />
         <Route path="/videoman" element={<VideoCreatorHome/>} />
+        <Route path="/computerProfile" element={<ComputerHome/>} />
       </Routes>
     </Router>
   )

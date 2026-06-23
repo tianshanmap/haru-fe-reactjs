@@ -56,6 +56,9 @@ export function getMoveEndPoint(name,parent) {
 export function getCreateEndPoint(name,parent) {
     return API_BASE_URL_8080 + '/filesystem/create?name=' + name + "&parent=" + parent;
 }
+export function getAudioGenerateEndPoint() {
+    return API_BASE_URL_8080 + '/filesystem/audio/generate';
+}
 
 export function generateVideo(request) {
     const remote_url = API_BASE_URL_8080 + "/filesystem/video/generate/v1";

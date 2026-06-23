@@ -3,6 +3,7 @@ import styles from "./audio_selector.module.css";
 import {
   getAudioList,
   getViewEndPoint,
+  getAudioGenerateEndPoint,
 } from "../api/api_service_8080";
 
 const AudioSelector = ({onComplete,onExit}) => {
@@ -105,7 +106,7 @@ const AudioSelector = ({onComplete,onExit}) => {
     };
     console.log("handleContinue::request=" + JSON.stringify(request));
     try {
-         let remote_url = "http://localhost:8080/filesystem/audio/generate";
+         let remote_url = getAudioGenerateEndPoint();
          const response = await fetch(remote_url, {
            method: 'POST', // Explicitly declare POST method
            headers: {
